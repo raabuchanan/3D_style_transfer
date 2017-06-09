@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Database
+*.db-*
+
+# Directories
+/learned_descriptors/data

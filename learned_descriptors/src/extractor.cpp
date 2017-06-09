@@ -11,6 +11,8 @@
 #include <vector>
 #include <unistd.h>
 
+// 10000 is needed for proper 3D reconstruction bu this requires 
+// a significant amount of memory
 #define NUM_KEYPOINTS 3000
 
 #define CALL_SQLITE(f)                                          \
@@ -71,7 +73,8 @@ int main( int argc, char** argv )
 
 		printf("Processing: %s\n", filenames[i].c_str());
 
-		cv::Ptr<Feature2D> detector = xfeatures2d::SIFT::create(NUM_KEYPOINTS,3,0.0067,10,1.6);
+		// COLAMP uses contrastThreshold=0.0067 which produces many low quality keypoints
+		cv::Ptr<Feature2D> detector = xfeatures2d::SIFT::create(NUM_KEYPOINTS,3,0.01,10,1.6);
 
 		vector<KeyPoint> keypoints;
 		detector->detect(img, keypoints);
@@ -81,93 +84,31 @@ int main( int argc, char** argv )
 		if(keypoints.size() > NUM_KEYPOINTS){
 			keypoints.resize(NUM_KEYPOINTS);
 		}
-
-
 		cv::Mat outImage;
 
-		float currentSize = keypoints[0].size;
-		float scale = 1.0;
-		Mat image((int)round(img.rows*scale),(int)round(img.cols*scale),CV_8U);
-
-		resize(img,image,image.size(),0,0,INTER_NEAREST);
-
-
-		//Mat paddedImage(image.rows + 64,image.cols + 64,CV_8U);
-		//copyMakeBorder( image, paddedImage, 32, 32, 32, 32, BORDER_CONSTANT, 0 );
 
 		for(int j=0; j<keypoints.size();j++)
 		{
-
-			//cout << "X: " << keypoints[j].pt.x << " Y: " << keypoints[j].pt.y << " size: " << keypoints[j].size <<  " angle: " << keypoints[j].angle << endl;
-
-			// if(keypoints[j].size > currentSize)
-			// {
-			// 	currentSize = keypoints[j].size;
-			// 	scale = scale / 1.1;
-			// 	Mat image((int)round(img.rows*scale),(int)round(img.cols*scale),CV_8U);
-			// 	resize(img,image,image.size(),0,0,INTER_NEAREST);
-			// }
-
-
 			int desc_it = 0;
-			for(int n=round(scale*keypoints[j].pt.y);n<round(scale*keypoints[j].pt.y) + 64; n++)
+			for(int n=round(keypoints[j].pt.y);n<round(keypoints[j].pt.y) + 64; n++)
 			{
-				for(int m=round(scale*keypoints[j].pt.x);m<round(scale*keypoints[j].pt.x) + 64; m++)
+				for(int m=round(keypoints[j].pt.x);m<round(keypoints[j].pt.x) + 64; m++)
 				{
 
-					descriptorBuffer[4096*j + desc_it] = image.at<uchar>(n,m);
+					descriptorBuffer[4096*j + desc_it] = img.at<uchar>(n,m);
 					desc_it++;
 				}				
 			}
 
-			// float tempScale = 1/scale;
-
 			keypointBuffer[j][0] = keypoints[j].pt.x;
 			keypointBuffer[j][1] = keypoints[j].pt.y;
-			keypointBuffer[j][2] = keypoints[j].size;//1/scale;
+			keypointBuffer[j][2] = keypoints[j].size;
 			keypointBuffer[j][3] = keypoints[j].angle;
-
-			// memcpy(&keypointBuffer[j][0], &keypoints[j].pt.x, sizeof(float));
-			// memcpy(&keypointBuffer[j][4], &keypoints[j].pt.y, sizeof(float));
-			// memcpy(&keypointBuffer[j][8], &tempScale, sizeof(float));
-			// memcpy(&keypointBuffer[j][12], &keypoints[j].angle, sizeof(float));
-
 		}
-
-
-/*
-	    CALL_SQLITE (prepare_v2 (finaldb, "INSERT INTO keypoints (image_id, rows,cols,data) VALUES (?, '2000', '4', ? )", -1, &stmt, NULL));
-	    CALL_SQLITE (bind_int(stmt, 1, image_id));
-	    CALL_SQLITE (bind_blob(stmt, 2, keypointBuffer,sizeof(keypointBuffer),SQLITE_STATIC));
-
-	    */
-
-/*
-	    int rc = sqlite3_prepare_v2 (finaldb, "INSERT INTO keypoints (image_id, rows,cols,data) VALUES (?, '2000', '4', ?);", -1, &stmt, NULL);
-
-        if (rc != SQLITE_OK)
-	    	cout << "prepare failed: " << sqlite3_errmsg(finaldb) << endl;
-
-	    rc = sqlite3_bind_int(stmt, 1, i + 1);
-
-        if (rc != SQLITE_OK)
-	    	cout << "bind in failed: " << sqlite3_errmsg(finaldb) << endl;
-
-	    rc = sqlite3_bind_blob(stmt, 2, keypointBuffer,sizeof(keypointBuffer),SQLITE_STATIC);
-
-        if (rc != SQLITE_OK)
-	    	cout << "bind blob failed: " << sqlite3_errmsg(finaldb) << endl;
-
-
-	    rc = sqlite3_step (stmt);
-	    printf ("Wrote data to row id %d\n", (int) sqlite3_last_insert_rowid (finaldb));
-
-        if (rc != SQLITE_DONE)
-	    	cout << "step failed: " << rc << endl;
-*/
 
 		int num_keys = (int)keypoints.size();
 
+		// Saving Keypoints to database
 	    CALL_SQLITE (prepare_v2 (db, "INSERT INTO keypoints (image_id, rows, cols, data) VALUES (?, ?, '4', ? )", -1, &stmt, NULL));
 	    CALL_SQLITE (bind_int(stmt, 1, image_id));
 	    CALL_SQLITE (bind_int(stmt, 2, num_keys));
@@ -176,6 +117,7 @@ int main( int argc, char** argv )
 	    CALL_SQLITE_EXPECT (step (stmt), DONE);
 	    printf ("Wrote data to row id %d\n", (int) sqlite3_last_insert_rowid (db));
 
+	    // Saving 64x64 patches to database
 	    CALL_SQLITE (prepare_v2 (db, "INSERT INTO descriptors (image_id, rows, cols, data) VALUES (?, ?, '4096', ? )", -1, &stmt, NULL));
 	    CALL_SQLITE (bind_int(stmt, 1, image_id));
 	    CALL_SQLITE (bind_int(stmt, 2, num_keys));
@@ -187,15 +129,8 @@ int main( int argc, char** argv )
 
 	    sqlite3_finalize(stmt);
 	    image_id++;
-
-	    // if(i>9){
-	    // 	break;
-	    // }
-
 	}
 
-
-	//sqlite3_close(finaldb);
 	sqlite3_close(db);
 
 	delete[] descriptorBuffer;

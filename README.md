@@ -47,7 +47,11 @@ To view matches between the first two images Run: `./verifier.o`
 `make`
 This will build all of the C++.
 
-2. **Carving:**
+2. **Carving:** To run:
+``cd ~/3D_style_transfer/Voxel-Carving/build``
+``./main /home/user/sample/ 50``
+
+3. **Viewing** The output file is inside the build folder. The format is .ply so the file can be viewed in any point cloud viewer such as MeshLab.
 
 
 

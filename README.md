@@ -30,3 +30,25 @@ Here exhaustive matching is performed using the GPU. Run `./matcher.o`
 6. **Viewing matches**
 To view matches between the first two images Run: `./verifier.o`
 
+## Voxel Carving
+
+0. **Prerequisites:**
+    * Ubuntu 14.04
+    * OpenCV 3.1.0
+    * VTK
+
+1. **Preparing data:** In order to use this module the user needs to have camera.txt, images.txt both without the HEADER (commented description). Additionaly the user needs to provide "sil" folder where the silhouettes are stored. Sample assets are provided in the "sample" folder.
+
+2. **Building:** To build the C++ code run:
+``cd ~/3D_style_transfer/Voxel-Carving/``
+`mkdir build`
+`cd build`
+`cmake ..`
+`make`
+This will build all of the C++.
+
+2. **Carving:**
+
+
+
+

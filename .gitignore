@@ -34,5 +34,9 @@
 # Database
 *.db-*
 
+# Images
+*.png
+
 # Directories
-/learned_descriptors/data
+learned_descriptors/data/glove
+

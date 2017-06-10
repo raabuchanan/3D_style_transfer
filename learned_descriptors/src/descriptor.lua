@@ -2,7 +2,6 @@ require 'nn'
 require 'cunn'
 require 'image'
 require 'lfs'
-require 'image'
 require 'torch'
 require 'lsqlite3'
 

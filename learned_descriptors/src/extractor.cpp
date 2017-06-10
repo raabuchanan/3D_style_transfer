@@ -11,9 +11,10 @@
 #include <vector>
 #include <unistd.h>
 
-// 10000 is needed for proper 3D reconstruction bu this requires 
-// a significant amount of memory
+// 5000 features is needed for proper 3D reconstruction but this requires 
+// a significant amount of memory. Also all images should have features extracted.
 #define NUM_KEYPOINTS 3000
+#define NUM_IMAGES_TO_EXTRACT 5
 
 #define CALL_SQLITE(f)                                          \
     {                                                           \
@@ -49,8 +50,6 @@ int main( int argc, char** argv )
 	String folderpath = "../data/glove/mosaic/*.png";
 	vector<String> filenames;
 	glob(folderpath, filenames);
-
-	//const char *dbFilename = "style_cup_194.db";
 	const char *dbFilename = "glove_mosaic_learned.db";
 	sqlite3 *db;
     char * sql;
@@ -61,7 +60,7 @@ int main( int argc, char** argv )
 
     CALL_SQLITE (open (dbFilename, &db));
 
-	for (int i=0; i<filenames.size(); i++)
+	for (int i=0; i<NUM_IMAGES_TO_EXTRACT; i++)
 	{
 	    Mat img = imread(filenames[i], CV_LOAD_IMAGE_GRAYSCALE );
 

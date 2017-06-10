@@ -15,7 +15,7 @@ Final Project for 3D Vision at ETH Zurich
         * ``torch``
         * ``lsqlite3``
 
-1. **Preparing data:** To get started quickly use the images proveded [here](https://polybox.ethz.ch/index.php/s/82WvLFNBR4ACjir). Place the entire folder named ``glove`` inside the data folder. If you want to use your own data you will need to first run ``rename.sh`` to change the names of the files to sequential numbers.
+1. **Preparing data:** To get started quickly use the images proveded [here](https://polybox.ethz.ch/index.php/s/82WvLFNBR4ACjir). Place the entire directory named ``glove/mosaic`` inside the data folder. You can download the other directories aswell if you want to try out different styles. If you want to use your own data you will need to first run ``rename.sh`` to change the names of the files to sequential numbers.
 2. **Building:** To build the C++ code run:
 ``cd ~/3D_style_transfer/learned_descriptors/src``
 `sudo chmod +x build.sh`

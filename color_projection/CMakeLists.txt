@@ -7,7 +7,7 @@ PROJECT(vision_project)
 find_package( OpenCV REQUIRED )
 
 
-find_package(PCL 1.2 REQUIRED)
+find_package(PCL 1.7 REQUIRED)
 
 find_package( Eigen3 REQUIRED )
 include_directories( EIGEN3_INCLUDE_DIR )

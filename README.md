@@ -114,7 +114,19 @@ Now that you have this, run
 ```
 where cameras.txt and images.txt are the UNALTERED files that Colmap generated. The `/` at the end of the stylized image folder is also required. This will start the main program.
 
+5. **Example** All of the data used in our project can be seen [here](https://polybox.ethz.ch/index.php/s/66sC4mLNNL3y8Lr)
 
-5 **The Other Code** There are two other executables included, which help with point cloud processing. One of them, `filter_point_cloud`, runs a series of filters that tries to filter out all points in the point cloud that aren't the object you wish to color. We assumed a fairly dense point cloud (upwards of 100000 points in the object of interest), where the object is sitting on a table (ie we can segment and remove a ground plane). `view_point_cloud` is exactly as it sounds: it just visualizes a point cloud in pcl's viewer.
+Run
+
+```bash
+cd /PATH/TO/DATA_FOLDER/data/glove
+
+ /PATH/TO/BUILD/color_painting glove_filtered.ply cameras.txt images.txt mosaic/ 
+```
+
+This should run the program. You can type "all" to have the glove_few.ply cloud colored by all images in the mosaic folder. Type anything else, and you will be prompted to choose images to color the cloud with. When you are finished, type q. You will be prompted to enter a file name to save the point cloud to.
+
+
+6 **The Other Code** There are two other executables included, which help with point cloud processing. One of them, `filter_point_cloud`, runs a series of filters that tries to filter out all points in the point cloud that aren't the object you wish to color. We assumed a fairly dense point cloud (upwards of 100000 points in the object of interest), where the object is sitting on a table (ie we can segment and remove a ground plane). `view_point_cloud` is exactly as it sounds: it just visualizes a point cloud in pcl's viewer.
 
 

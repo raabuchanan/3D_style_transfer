@@ -53,7 +53,30 @@ This will build all of the C++.
 
 3. **Viewing** The output file is inside the build folder. The format is .ply so the file can be viewed in any point cloud viewer such as MeshLab.
 
+## Scripts
 
+0. **Prerequisites:**
+    * Ubuntu 14.04
+    * COLMAP
+    * CUDA v7.5
+
+1. **Running:** To run the scripts modify the PROJECT_PATH and COLMAP_PATH to appropriate location. PORJECT_PATH needs to contain the images and/or the database depending on which script is ran. COLMAP_PATH is simply the path to COLMAP binaries assuming they were built but not installed.
+
+1. **Running:** Simply run the chosen bash script:
+
+`./3dcnn`
+
+3. **Scripts Description:**
+
+3dcnn: Runs 3D reconstruction using learned descriptor database. Assumes database already exists from the learned descriptors code.
+
+3ddense: Runs dense reconstruction on already existing sparse reconstruction from learned descriptor code.
+
+3dmesh: Runs mesh reconstruction. Useful for experimenting with different reconstructions from original images data but with stylized images.
+
+3drec: Standard 3D reconstruction. Requires images folder.
+
+3dstyle: Uses images to find and match descriptors and uses stylized images in style_image to 3D reconstruction with stylized color. Assumes folder images and style_images is present. Stylized images need to be same the same name as the original counterparts.
 
 ## Point Cloud coloring
 

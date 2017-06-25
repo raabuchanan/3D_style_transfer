@@ -1,0 +1,51 @@
+#! /bin/bash
+
+echo "Beginning Script"
+
+PROJECT_PATH=/home/USER/Documents/proj_cnn_cup_new
+COLMAP_PATH=/home/USER/Documents/colmap/build
+
+mkdir $PROJECT_PATH/sparse
+
+$COLMAP_PATH/src/exe/mapper \
+		--General.database_path $PROJECT_PATH/database.db \
+		--General.image_path $PROJECT_PATH/images \
+		--export_path $PROJECT_PATH/sparse
+
+mkdir $PROJECT_PATH/dense
+
+$COLMAP_PATH/src/exe/image_undistorter \
+    		--General.image_path $PROJECT_PATH/images \
+   		--input_path $PROJECT_PATH/sparse/0 \
+    		--output_path $PROJECT_PATH/dense \
+   		--output_type COLMAP \
+   		--max_image_size 2000
+
+$COLMAP_PATH/src/exe/dense_mapper \
+    		--workspace_path $PROJECT_PATH/dense \
+    		--workspace_format COLMAP \
+    		--DenseMapperOptions.max_image_size 0 \
+    		--DenseMapperOptions.patch_match_filter false \
+    		--DenseMapperOptions.patch_match_geom_consistency false \
+    		--DenseMapperOptions.patch_match_num_iterations 4 \
+		--DenseMapperOptions.patch_match_gpu_index 0
+
+$COLMAP_PATH/src/exe/dense_mapper \
+    		--workspace_path $PROJECT_PATH/dense \
+    		--workspace_format COLMAP \
+    		--DenseMapperOptions.max_image_size 0 \
+    		--DenseMapperOptions.patch_match_filter true \
+    		--DenseMapperOptions.patch_match_geom_consistency true \
+		--DenseMapperOptions.patch_match_gpu_index 0
+
+$COLMAP_PATH/src/exe/dense_fuser \
+    		--workspace_path $PROJECT_PATH/dense \
+    		--workspace_format COLMAP \
+    		--input_type geometric \
+		--DenseMapperOptions.fusion_min_num_pixels 10 \
+    		--output_path $PROJECT_PATH/dense/point-cloud.ply
+
+$COLMAP_PATH/src/exe/dense_mesher \
+    		--input_path $PROJECT_PATH/dense/point-cloud.ply \
+    		--output_path $PROJECT_PATH/dense/mesh.ply \
+		--DenseMapperOptions.patch_match_gpu_index 0

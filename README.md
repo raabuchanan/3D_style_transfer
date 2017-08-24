@@ -1,8 +1,8 @@
 # 3D_style_transfer
-Final Project for 3D Vision at ETH Zurich
+Final Project for 3D Vision course at ETH Zurich. This project was an attempt to combine established methods in image and video style transfer with 3D reconstruction techniques.
 
-![](style.png?raw=true)
-![](example.png?raw=true)
+![](/images/style.png?raw=true)
+![](/images/example.png?raw=true)
 
 ## Learned Descriptors
 

@@ -1,6 +1,8 @@
 # 3D_style_transfer
 Final Project for 3D Vision at ETH Zurich
 
+![](style.png?raw=true)
+![](example.png?raw=true)
 
 ## Learned Descriptors
 
